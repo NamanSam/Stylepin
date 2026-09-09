@@ -2,6 +2,7 @@ package com.stylepin.service;
 
 import com.stylepin.dto.OutfitResponseDTO;
 import com.stylepin.entity.Outfit;
+import com.stylepin.exception.ResourceNotFoundException;
 import com.stylepin.repository.OutfitRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,5 +26,10 @@ public class OutfitService {
                 .map(OutfitResponseDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-}
 
+    public OutfitResponseDTO getOutfitById(Long id) {
+        Outfit outfit = outfitRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Outfit not found with id: " + id));
+        return OutfitResponseDTO.fromEntity(outfit);
+    }
+}

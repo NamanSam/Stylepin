@@ -8,3 +8,17 @@ export async function fetchOutfits() {
   return response.json()
 }
 
+export async function fetchOutfitById(id) {
+  const response = await fetch(`${API_BASE_URL}/outfits/${id}`)
+  if (response.status === 404) {
+    const error = new Error("Outfit not found")
+    error.status = 404
+    throw error
+  }
+  if (!response.ok) {
+    const error = new Error(`Failed to fetch outfit: ${response.status} ${response.statusText}`)
+    error.status = response.status
+    throw error
+  }
+  return response.json()
+}
