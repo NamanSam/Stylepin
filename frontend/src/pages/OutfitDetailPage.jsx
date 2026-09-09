@@ -43,7 +43,7 @@ function OutfitDetailPage() {
       <nav className="detail-nav" aria-label="Breadcrumb">
         <div className="detail-nav__inner">
           <Link to="/" className="detail-nav__back">
-            <span aria-hidden="true">←</span> Back to Feed
+            <span aria-hidden="true">&larr;</span> Back to Feed
           </Link>
           <Link to="/" className="detail-nav__logo">
             StylePin
@@ -107,8 +107,12 @@ function OutfitDetailPage() {
 
                 {outfit.tags && outfit.tags.length > 0 && (
                   <div className="outfit-hero__tags" aria-label="Tags">
-                    {outfit.tags.map((tag) => (
-                      <span key={tag} className="outfit-hero__tag">
+                    {outfit.tags.map((tag, i) => (
+                      <span
+                        key={tag}
+                        className="outfit-hero__tag"
+                        style={{ '--tag-index': i }}
+                      >
                         #{tag}
                       </span>
                     ))}
@@ -129,8 +133,14 @@ function OutfitDetailPage() {
 
               {outfit.products && outfit.products.length > 0 ? (
                 <div className="shop-the-look__grid">
-                  {outfit.products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                  {outfit.products.map((product, index) => (
+                    <div
+                      key={product.id}
+                      className="shop-the-look__item"
+                      style={{ '--item-index': index }}
+                    >
+                      <ProductCard product={product} />
+                    </div>
                   ))}
                 </div>
               ) : (

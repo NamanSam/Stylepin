@@ -1,7 +1,7 @@
+import { formatINR } from '../utils/formatPrice.js'
+
 function ProductCard({ product }) {
-  const formattedPrice = product.price != null
-    ? `$${Number(product.price).toFixed(2)}`
-    : null
+  const formattedPrice = formatINR(product.price)
 
   return (
     <article className="product-card">
