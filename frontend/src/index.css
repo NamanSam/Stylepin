@@ -1,3 +1,53 @@
+/* ==========================================================================
+   THEME TOKENS
+   ========================================================================== */
+
+:root {
+  --bg: #faf7f2;
+  --bg-header: rgba(250, 247, 242, 0.88);
+  --surface: #ffffff;
+  --surface-hover: #f4efe7;
+  --elevated: #f0ebe2;
+  --text: #1f1f1f;
+  --text-secondary: #6b6560;
+  --text-muted: #8a8178;
+  --text-faint: #a49e97;
+  --border: rgba(40, 28, 18, 0.06);
+  --border-strong: rgba(40, 28, 18, 0.12);
+  --accent: #1f1f1f;
+  --accent-fg: #faf7f2;
+  --accent-hover: #3a342e;
+  --shadow: rgba(40, 28, 18, 0.04);
+  --shadow-strong: rgba(40, 28, 18, 0.1);
+  --skeleton: #ede8df;
+  --skeleton-highlight: #f5f0e8;
+}
+
+[data-theme="dark"] {
+  --bg: #111110;
+  --bg-header: rgba(17, 17, 16, 0.88);
+  --surface: #1c1c1a;
+  --surface-hover: #2a2a28;
+  --elevated: #252523;
+  --text: #ede8e0;
+  --text-secondary: #a09890;
+  --text-muted: #7a7268;
+  --text-faint: #6a6460;
+  --border: rgba(255, 248, 240, 0.07);
+  --border-strong: rgba(255, 248, 240, 0.12);
+  --accent: #ede8e0;
+  --accent-fg: #1c1c1a;
+  --accent-hover: #d8d0c6;
+  --shadow: rgba(0, 0, 0, 0.25);
+  --shadow-strong: rgba(0, 0, 0, 0.4);
+  --skeleton: #252523;
+  --skeleton-highlight: #2e2e2c;
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+
 *,
 *::before,
 *::after {
@@ -13,10 +63,11 @@ body,
 
 body {
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-  background: #faf7f2;
-  color: #1f1f1f;
+  background: var(--bg);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .sr-only {

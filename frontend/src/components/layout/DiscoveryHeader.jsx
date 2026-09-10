@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
+import ThemeToggle from '../ui/ThemeToggle.jsx'
 
-function DiscoveryHeader({ searchQuery, onSearchChange }) {
+function DiscoveryHeader({ searchQuery, onSearchChange, theme, onToggleTheme }) {
   return (
     <header className="dheader">
       <div className="dheader__inner">
@@ -24,6 +25,7 @@ function DiscoveryHeader({ searchQuery, onSearchChange }) {
         </div>
 
         <div className="dheader__actions">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           <button type="button" className="dheader__action-btn" aria-label="Notifications">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />

@@ -6,8 +6,10 @@ import CategoryNav from './components/navigation/CategoryNav.jsx'
 import FeedPage from './pages/FeedPage.jsx'
 import OutfitDetailPage from './pages/OutfitDetailPage.jsx'
 import { fetchOutfits } from './api/outfitApi.js'
+import useTheme from './hooks/useTheme.js'
 
 function App() {
+  const { theme, toggleTheme } = useTheme()
   const [activeCategory, setActiveCategory] = useState('For You')
   const [searchQuery, setSearchQuery] = useState('')
   const [outfits, setOutfits] = useState([])
@@ -66,6 +68,8 @@ function App() {
                 <DiscoveryHeader
                   searchQuery={searchQuery}
                   onSearchChange={setSearchQuery}
+                  theme={theme}
+                  onToggleTheme={toggleTheme}
                 />
                 <CategoryNav
                   activeCategory={activeCategory}
