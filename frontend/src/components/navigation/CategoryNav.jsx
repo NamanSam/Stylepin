@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 const CATEGORIES = [
   'For You',
   'Trending',
@@ -19,9 +17,7 @@ const CATEGORIES = [
   'Oversized',
 ]
 
-function CategoryNav() {
-  const [active, setActive] = useState('For You')
-
+function CategoryNav({ activeCategory, onCategoryChange }) {
   return (
     <nav className="category-nav" aria-label="Fashion categories">
       <div className="category-nav__scroll">
@@ -29,8 +25,8 @@ function CategoryNav() {
           <button
             key={category}
             type="button"
-            className={`category-nav__tab ${active === category ? 'category-nav__tab--active' : ''}`}
-            onClick={() => setActive(category)}
+            className={`category-nav__tab ${activeCategory === category ? 'category-nav__tab--active' : ''}`}
+            onClick={() => onCategoryChange(category)}
           >
             {category}
           </button>

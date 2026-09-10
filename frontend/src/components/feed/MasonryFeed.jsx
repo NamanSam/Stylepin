@@ -4,7 +4,7 @@ import FeedInsert from './FeedInsert.jsx'
 const INSERT_INTERVAL = 8
 const INSERT_SLOTS = new Set([INSERT_INTERVAL, INSERT_INTERVAL * 3, INSERT_INTERVAL * 5])
 
-function MasonryFeed({ outfits }) {
+function MasonryFeed({ outfits, searchQuery }) {
   let insertCounter = 0
 
   return (
@@ -21,8 +21,9 @@ function MasonryFeed({ outfits }) {
           insertCounter++
         }
 
+        const staggerBase = searchQuery ? 0 : index
         items.push(
-          <FashionPin key={outfit.id} outfit={outfit} index={index} />
+          <FashionPin key={outfit.id} outfit={outfit} index={staggerBase} />
         )
 
         return items

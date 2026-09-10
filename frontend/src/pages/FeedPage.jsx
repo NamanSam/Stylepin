@@ -1,54 +1,31 @@
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import MasonryFeed from '../components/feed/MasonryFeed.jsx'
 import FeedSkeleton from '../components/feed/FeedSkeleton.jsx'
-import { fetchOutfits } from '../api/outfitApi.js'
 
-function FeedPage() {
-  const [outfits, setOutfits] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [usedDev, setUsedDev] = useState(false)
+function FeedPage({ outfits, loading, error, usedDev, activeCategory, searchQuery }) {
+  const filteredOutfits = useMemo(() => {
+    let result = outfits
 
-  useEffect(() => {
-    let ignore = false
-
-    async function loadOutfits() {
-      try {
-        setLoading(true)
-        setError(null)
-        const data = await fetchOutfits()
-        if (!ignore) {
-          if (data && data.length > 0) {
-            setOutfits(data)
-          } else {
-            const mod = await import('../dev/demoFashionFeed.js')
-            setOutfits(mod.default)
-            setUsedDev(true)
-          }
-        }
-      } catch {
-        if (!ignore) {
-          try {
-            const mod = await import('../dev/demoFashionFeed.js')
-            setOutfits(mod.default)
-            setUsedDev(true)
-          } catch {
-            setError('Failed to load outfits')
-          }
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false)
-        }
-      }
+    if (activeCategory !== 'For You') {
+      const catLower = activeCategory.toLowerCase()
+      result = result.filter((o) => {
+        const cat = (o.category || '').toLowerCase()
+        return cat.includes(catLower)
+      })
     }
 
-    loadOutfits()
-
-    return () => {
-      ignore = true
+    const q = searchQuery.trim().toLowerCase()
+    if (q) {
+      result = result.filter((o) => {
+        const title = (o.title || '').toLowerCase()
+        const cat = (o.category || '').toLowerCase()
+        const tags = (o.tags || []).join(' ').toLowerCase()
+        return title.includes(q) || cat.includes(q) || tags.includes(q)
+      })
     }
-  }, [])
+
+    return result
+  }, [outfits, activeCategory, searchQuery])
 
   if (loading) {
     return <FeedSkeleton />
@@ -82,7 +59,27 @@ function FeedPage() {
       <div className="feed-intro">
         <h2 className="feed-intro__heading">Your Daily Style Feed</h2>
       </div>
-      <MasonryFeed outfits={outfits} />
+      <div className="feed-filter-wrapper" key={`${activeCategory}-${searchQuery}`}>
+        {filteredOutfits.length > 0 ? (
+          <MasonryFeed outfits={filteredOutfits} searchQuery={searchQuery} />
+        ) : (
+          <div className="feed-empty-state" role="status">
+            <div className="feed-empty-state__icon" aria-hidden="true">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+                <path d="M8 11h6" />
+              </svg>
+            </div>
+            <p className="feed-empty-state__title">No outfits found</p>
+            <p className="feed-empty-state__subtext">
+              {searchQuery
+                ? `No results for "${searchQuery}" in ${activeCategory === 'For You' ? 'all categories' : activeCategory}`
+                : `No outfits in the ${activeCategory} category yet`}
+            </p>
+          </div>
+        )}
+      </div>
     </>
   )
 }

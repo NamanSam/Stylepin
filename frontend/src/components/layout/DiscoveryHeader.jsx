@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-function DiscoveryHeader() {
+function DiscoveryHeader({ searchQuery, onSearchChange }) {
   return (
     <header className="dheader">
       <div className="dheader__inner">
@@ -18,6 +18,8 @@ function DiscoveryHeader() {
             type="search"
             placeholder="Search outfits, aesthetics, creators, brands..."
             aria-label="Search outfits, aesthetics, creators, brands"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
           />
         </div>
 
