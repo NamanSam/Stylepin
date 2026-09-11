@@ -5,6 +5,7 @@ import PinMinimal from './PinMinimal.jsx'
 import PinTrend from './PinTrend.jsx'
 import PinShoppable from './PinShoppable.jsx'
 import PinDetail from './PinDetail.jsx'
+import OutfitActions from './OutfitActions.jsx'
 
 const PIN_COMPONENTS = {
   standard: PinStandard,
@@ -25,19 +26,19 @@ function assignVariant(outfit, index) {
   return VARIANT_SEQUENCE[index % VARIANT_SEQUENCE.length]
 }
 
-function FashionPin({ outfit, index }) {
+function FashionPin({ outfit, index, onRemove }) {
   const variant = assignVariant(outfit, index)
   const PinComponent = PIN_COMPONENTS[variant] || PinStandard
 
   return (
-    <Link
+    <div className="fashion-pin"><Link
       to={`/outfits/${outfit.id}`}
       className="pin-link"
       aria-label={`View outfit: ${outfit.title}`}
       style={{ '--stagger': index }}
     >
       <PinComponent outfit={outfit} />
-    </Link>
+    </Link><OutfitActions outfit={outfit} onRemove={onRemove} /></div>
   )
 }
 

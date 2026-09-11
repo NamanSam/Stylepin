@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { fetchOutfitById } from '../api/outfitApi.js'
 import ProductCard from '../components/ProductCard.jsx'
+import OutfitActions from '../components/pins/OutfitActions.jsx'
 
 function OutfitDetailPage() {
   const { id } = useParams()
@@ -101,6 +102,7 @@ function OutfitDetailPage() {
                   <p className="outfit-hero__category">{outfit.category}</p>
                 )}
                 <h1 className="outfit-hero__title">{outfit.title}</h1>
+                <OutfitActions outfit={outfit} />
                 {outfit.description && (
                   <p className="outfit-hero__description">{outfit.description}</p>
                 )}

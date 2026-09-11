@@ -1,14 +1,20 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import Sidebar from './components/layout/Sidebar.jsx'
 import DiscoveryHeader from './components/layout/DiscoveryHeader.jsx'
-import CategoryNav from './components/navigation/CategoryNav.jsx'
 import FeedPage from './pages/FeedPage.jsx'
 import OutfitDetailPage from './pages/OutfitDetailPage.jsx'
+import AuthPage from './pages/AuthPage.jsx'
+import SavedPage from './pages/SavedPage.jsx'
+import BoardsPage from './pages/BoardsPage.jsx'
+import BoardDetailPage from './pages/BoardDetailPage.jsx'
+import AuthProvider from './auth/AuthProvider.jsx'
+import ProtectedRoute from './auth/ProtectedRoute.jsx'
+import SavedOutfitsProvider from './context/SavedOutfitsProvider.jsx'
 import { fetchOutfits } from './api/outfitApi.js'
 import useTheme from './hooks/useTheme.js'
+import './editorial.css'
 
-function App() {
+function Site() {
   const { theme, toggleTheme } = useTheme()
   const [activeCategory, setActiveCategory] = useState('For You')
   const [searchQuery, setSearchQuery] = useState('')
@@ -16,81 +22,45 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [usedDev, setUsedDev] = useState(false)
-
+  const location = useLocation()
+  useEffect(() => {
+    if (!location.hash) window.scrollTo(0,0)
+    else requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView())
+  }, [location.pathname, location.hash, loading])
   useEffect(() => {
     let ignore = false
-
-    async function loadOutfits() {
+    async function load() {
       try {
-        setLoading(true)
-        setError(null)
         const data = await fetchOutfits()
-        if (!ignore) {
-          if (data && data.length > 0) {
-            setOutfits(data)
-          } else {
-            const mod = await import('./dev/demoFashionFeed.js')
-            setOutfits(mod.default)
-            setUsedDev(true)
-          }
-        }
+        if (!data?.length) throw new Error('No live outfits')
+        if (!ignore) setOutfits(data)
       } catch {
-        if (!ignore) {
-          try {
-            const mod = await import('./dev/demoFashionFeed.js')
-            setOutfits(mod.default)
-            setUsedDev(true)
-          } catch {
-            setError('Failed to load outfits')
-          }
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false)
-        }
-      }
+        try {
+          const mod = await import('./dev/demoFashionFeed.js')
+          if (!ignore) { setOutfits(mod.default.map(o => ({ ...o, isDemo: true }))); setUsedDev(true) }
+        } catch { if (!ignore) setError('Unable to load outfits. Please try again later.') }
+      } finally { if (!ignore) setLoading(false) }
     }
-
-    loadOutfits()
-
+    load()
     return () => { ignore = true }
   }, [])
-
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div className="app-shell">
-              <Sidebar />
-              <div className="app-main">
-                <DiscoveryHeader
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  theme={theme}
-                  onToggleTheme={toggleTheme}
-                />
-                <CategoryNav
-                  activeCategory={activeCategory}
-                  onCategoryChange={setActiveCategory}
-                />
-                <FeedPage
-                  outfits={outfits}
-                  loading={loading}
-                  error={error}
-                  usedDev={usedDev}
-                  activeCategory={activeCategory}
-                  searchQuery={searchQuery}
-                />
-              </div>
-            </div>
-          }
-        />
-        <Route path="/outfits/:id" element={<OutfitDetailPage />} />
-      </Routes>
-    </BrowserRouter>
-  )
+  return <div className="editorial-app"><a href="#page-content" className="skip-link">Skip to content</a>
+    <DiscoveryHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} theme={theme} onToggleTheme={toggleTheme} />
+    <div id="page-content"><Routes>
+      <Route path="/" element={<FeedPage outfits={outfits} loading={loading} error={error} usedDev={usedDev} activeCategory={activeCategory} onCategoryChange={setActiveCategory} searchQuery={searchQuery} />} />
+      <Route path="/outfits/:id" element={<OutfitDetailPage />} />
+      <Route path="/login" element={<AuthPage key="login" />} />
+      <Route path="/register" element={<AuthPage key="register" registration />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/saved" element={<SavedPage />} />
+        <Route path="/boards" element={<BoardsPage />} />
+        <Route path="/boards/:id" element={<BoardDetailPage />} />
+      </Route>
+      <Route path="*" element={<main className="collection-page"><h1>Page not found.</h1><a className="text-link" href="/">Back to the edit ↗</a></main>} />
+    </Routes></div>
+    <footer className="editorial-footer"><a href="/" className="footer-wordmark">STYLEPIN</a><div><span>A point of view. A world of possibilities.</span><span>Fashion discovery / Made personal.</span><a href="#page-content">Back to top ↑</a></div></footer>
+  </div>
 }
-
-export default App
+export default function App() {
+  return <BrowserRouter><AuthProvider><SavedOutfitsProvider><Site /></SavedOutfitsProvider></AuthProvider></BrowserRouter>
+}

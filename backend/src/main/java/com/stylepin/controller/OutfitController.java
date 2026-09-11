@@ -3,7 +3,6 @@ package com.stylepin.controller;
 import com.stylepin.dto.OutfitResponseDTO;
 import com.stylepin.service.OutfitService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/outfits")
-@CrossOrigin
 public class OutfitController {
 
     private final OutfitService outfitService;

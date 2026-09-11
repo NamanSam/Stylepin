@@ -1,87 +1,26 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import MasonryFeed from '../components/feed/MasonryFeed.jsx'
 import FeedSkeleton from '../components/feed/FeedSkeleton.jsx'
-
-function FeedPage({ outfits, loading, error, usedDev, activeCategory, searchQuery }) {
-  const filteredOutfits = useMemo(() => {
-    let result = outfits
-
-    if (activeCategory !== 'For You') {
-      const catLower = activeCategory.toLowerCase()
-      result = result.filter((o) => {
-        const cat = (o.category || '').toLowerCase()
-        return cat.includes(catLower)
-      })
-    }
-
-    const q = searchQuery.trim().toLowerCase()
-    if (q) {
-      result = result.filter((o) => {
-        const title = (o.title || '').toLowerCase()
-        const cat = (o.category || '').toLowerCase()
-        const tags = (o.tags || []).join(' ').toLowerCase()
-        return title.includes(q) || cat.includes(q) || tags.includes(q)
-      })
-    }
-
-    return result
-  }, [outfits, activeCategory, searchQuery])
-
-  if (loading) {
-    return <FeedSkeleton />
-  }
-
-  if (error) {
-    return (
-      <div className="feed-status feed-status--error" role="alert">
-        <p>{error}</p>
-        <p className="feed-status__subtext">Please ensure the backend is running at http://localhost:8080.</p>
-      </div>
-    )
-  }
-
-  if (outfits.length === 0) {
-    return (
-      <div className="feed-status feed-status--empty">
-        <p>No outfits found.</p>
-      </div>
-    )
-  }
-
-  return (
-    <>
-      {usedDev && (
-        <div className="feed-dev-banner" role="status">
-          <span className="feed-dev-banner__dot" aria-hidden="true" />
-          Development mode — using demo feed data
-        </div>
-      )}
-      <div className="feed-intro">
-        <h2 className="feed-intro__heading">Your Daily Style Feed</h2>
-      </div>
-      <div className="feed-filter-wrapper" key={`${activeCategory}-${searchQuery}`}>
-        {filteredOutfits.length > 0 ? (
-          <MasonryFeed outfits={filteredOutfits} searchQuery={searchQuery} />
-        ) : (
-          <div className="feed-empty-state" role="status">
-            <div className="feed-empty-state__icon" aria-hidden="true">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
-                <path d="M8 11h6" />
-              </svg>
-            </div>
-            <p className="feed-empty-state__title">No outfits found</p>
-            <p className="feed-empty-state__subtext">
-              {searchQuery
-                ? `No results for "${searchQuery}" in ${activeCategory === 'For You' ? 'all categories' : activeCategory}`
-                : `No outfits in the ${activeCategory} category yet`}
-            </p>
-          </div>
-        )}
-      </div>
-    </>
-  )
+import EditorialHome from '../components/editorial/EditorialHome.jsx'
+import CategoryNav from '../components/navigation/CategoryNav.jsx'
+export default function FeedPage({ outfits, loading, error, usedDev, activeCategory, onCategoryChange, searchQuery }) {
+  const [visible, setVisible] = useState(8)
+  const filtered = useMemo(() => outfits.filter(o => {
+    const category = activeCategory === 'For You' || (o.category || '').toLowerCase().includes(activeCategory.toLowerCase())
+    const text = [o.title, o.category, ...(o.tags || [])].join(' ').toLowerCase()
+    return category && text.includes(searchQuery.trim().toLowerCase())
+  }), [outfits, activeCategory, searchQuery])
+  const searching = !!searchQuery.trim() || activeCategory !== 'For You'
+  if (loading) return <main className="collection-page"><p role="status">Preparing the edit…</p><FeedSkeleton /></main>
+  if (error) return <main className="collection-page" role="alert"><h1>The edit is taking a moment.</h1><p>{error}</p></main>
+  return <main>
+    {usedDev && <p className="preview-notice" role="status">Preview collection · Live outfits are currently unavailable. Saving is available on live looks.</p>}
+    {!searching && <EditorialHome outfits={outfits} onCategory={onCategoryChange} />}
+    <section id="discover" className="editorial-section discover-section"><div className="section-heading"><div><span className="eyebrow">Your next point of view</span><h2>{searching ? 'Find your inspiration.' : 'Looks worth a closer look.'}</h2></div><span>{filtered.length} looks</span></div>
+      <CategoryNav activeCategory={activeCategory} onCategoryChange={value => { setVisible(8); onCategoryChange(value) }} />
+      {filtered.length ? <><MasonryFeed outfits={filtered.slice(0, searching ? filtered.length : visible)} searchQuery={searchQuery} showInserts={false} />
+        {!searching && visible < filtered.length && <div className="discover-more"><button className="outline-button" onClick={() => setVisible(n => n + 8)}>More to discover ↓</button></div>}</> :
+        <div className="collection-empty"><h3>No looks found.</h3><p>Try another search or category.</p><button onClick={() => onCategoryChange('For You')} className="text-link">View all categories</button></div>}
+    </section>
+  </main>
 }
-
-export default FeedPage
