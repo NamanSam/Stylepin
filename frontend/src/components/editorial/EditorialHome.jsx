@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import ProductCard from '../ProductCard.jsx'
 
 function CampaignImage({ outfit, className = '', eager = false }) {
   if (!outfit) return null
@@ -12,11 +11,12 @@ export default function EditorialHome({ outfits, onCategory }) {
   const hero = pick('old money', 1), secondary = pick('minimal', 4), street = pick('streetwear', 0)
   const formalLooks = outfits.filter(o => o.category?.toLowerCase().includes('formal'))
   const formal = formalLooks.at(-1) || outfits[3 % outfits.length]
-  const seen = new Set()
-  const products = outfits.flatMap(o => o.products || []).filter(p => {
-    if (seen.has(p.name)) return false
-    seen.add(p.name); return true
-  }).slice(0,4)
+  const editTiles = [
+    pick('streetwear', 0),
+    pick('casual', 6),
+    pick('korean', 7),
+    pick('vintage', 17),
+  ].filter(Boolean).slice(0, 4)
   function explore(category) { onCategory(category); requestAnimationFrame(() => document.getElementById('discover')?.scrollIntoView({ behavior: 'instant' })) }
   return <>
     <section className="campaign-hero">
@@ -29,8 +29,7 @@ export default function EditorialHome({ outfits, onCategory }) {
       <CampaignImage outfit={secondary} className="story-image" />
       <div className="story-aside"><CampaignImage outfit={street} /><span className="eyebrow">A different kind of everyday</span></div>
     </section>
-    {products.length > 0 && <section className="editorial-section selected-pieces" id="pieces"><div className="section-heading"><div><span className="eyebrow">Details make the difference</span><h2>Selected pieces.</h2></div><a className="text-link" href="#discover">Find the whole look ↗</a></div><div className="editorial-products">{products.map(p => <ProductCard key={p.id} product={p} />)}</div></section>}
-    <section className="philosophy editorial-section"><span className="eyebrow">The StylePin point of view</span><h2>Style is personal.<br /><em>Inspiration is everywhere.</em></h2><div className="philosophy-bottom"><span className="philosophy-mark" aria-hidden="true">SP.</span><p>We bring together looks, pieces, and possibilities. You decide what feels like you. No rules to follow. Just room to explore.</p></div></section>
+    {editTiles.length > 0 && <section className="editorial-section the-edit" id="edit"><div className="section-heading"><div><span className="eyebrow">Curated for you</span><h2>The Edit.</h2></div><a className="text-link" href="#discover">See all looks ↗</a></div><div className="editorial-products">{editTiles.map(o => <CampaignImage key={o.id} outfit={o} />)}</div></section>}
     <section className="afterhours editorial-section"><CampaignImage outfit={formal} /><div className="afterhours-copy"><span className="eyebrow">02 / Beyond the everyday</span><h2>A change<br />of <em>pace.</em></h2><p>Sharper lines. A little contrast.<br />Looks for wherever the day takes you.</p><button className="text-link" onClick={() => explore('Formal')}>Explore the occasion ↗</button></div></section>
   </>
 }

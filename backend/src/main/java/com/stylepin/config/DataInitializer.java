@@ -107,7 +107,7 @@ public class DataInitializer implements CommandLineRunner {
 
         seedOutfit(outfits, streetwear, "Sneaker Rotation",
                 "Built around the rotation: a favorite pair of sneakers styled with an oversized tee and technical joggers.",
-                img("photo-1556906781-9a412961c28c"),
+                img("photo-1509941943102-10c232535736"),
                 List.of("streetwear", "sneakers", "casual"),
                 List.of(
                         product("Oversized Graphic Tee", "Basement Label", 1199, "photo-1571945153237-4929e783af4a", "oversized-graphic-tee"),
@@ -180,7 +180,7 @@ public class DataInitializer implements CommandLineRunner {
 
         seedOutfit(outfits, y2k, "Cyber Throwback",
                 "Internet-era nostalgia with a vintage tech tee, distressed denim, and translucent sneakers.",
-                img("photo-1519230226635-1015a79b735a"),
+                img("photo-1567401893414-76b7b1e5a7a5"),
                 List.of("y2k", "cyber", "denim"),
                 List.of(
                         product("Vintage Tech Tee", "Retro Flash", 1399, "photo-1571945153237-4929e783af4a", "vintage-tech-tee"),
@@ -311,7 +311,7 @@ public class DataInitializer implements CommandLineRunner {
 
         seedOutfit(outfits, formal, "Evening Gala Fit",
                 "Full-gala polish: satin lapel blazer, slim black trousers, and a statement watch.",
-                img("photo-1533998839656-76f5e4a2bcc1"),
+                img("photo-1593030761757-71fae45fa0e7"),
                 List.of("formal", "evening", "luxury"),
                 List.of(
                         product("Satin-Lapel Blazer", "Savile Tailors", 15999, "photo-1507679799987-c73779587ccf", "satin-lapel-blazer"),
@@ -405,7 +405,7 @@ public class DataInitializer implements CommandLineRunner {
 
         seedOutfit(outfits, monochrome, "Tonal Grey Layer",
                 "A single-grey palette from washed tee to charcoal overshirt.",
-                img("photo-1495121553079-4c61a1bd76f5"),
+                img("photo-1509316975850-ff9c5deb0cd9"),
                 List.of("monochrome", "grey", "layered"),
                 List.of(
                         product("Grey Washed Tee", "Neutral Studios", 999, "photo-1511556820780-d912e42b4980", "grey-washed-tee"),
@@ -484,6 +484,9 @@ public class DataInitializer implements CommandLineRunner {
                     outfits.add(created);
                     return created;
                 });
+        if (!imageUrl.equals(outfit.getImageUrl())) {
+            outfit.setImageUrl(imageUrl);
+        }
         syncProducts(outfit, category, productSeeds);
     }
 

@@ -16,11 +16,10 @@ const PIN_COMPONENTS = {
   detail: PinDetail,
 }
 
-const VARIANT_SEQUENCE = ['standard', 'editorial', 'minimal', 'detail', 'standard', 'editorial', 'minimal']
+const VARIANT_SEQUENCE = ['standard', 'editorial', 'minimal', 'editorial', 'standard', 'minimal']
 
 function assignVariant(outfit, index) {
-  if (outfit.variant) return outfit.variant
-  if (outfit.products && outfit.products.length > 0) return 'shoppable'
+  if (outfit.variant && PIN_COMPONENTS[outfit.variant]) return outfit.variant
   const tags = outfit.tags || []
   if (tags.some(t => t.toLowerCase().includes('trending'))) return 'trend'
   return VARIANT_SEQUENCE[index % VARIANT_SEQUENCE.length]
@@ -31,7 +30,10 @@ function FashionPin({ outfit, index, onRemove }) {
   const PinComponent = PIN_COMPONENTS[variant] || PinStandard
 
   return (
-    <div className="fashion-pin"><Link
+    <div
+      className="fashion-pin"
+      style={outfit.ratio ? { '--pin-ratio': outfit.ratio } : undefined}
+    ><Link
       to={`/outfits/${outfit.id}`}
       className="pin-link"
       aria-label={`View outfit: ${outfit.title}`}

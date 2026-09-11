@@ -52,7 +52,7 @@ button:disabled { cursor: wait; opacity: .55; }
 .text-link { font-size: .875rem; display: inline-flex; justify-content: space-between; gap: 36px; text-decoration: none; border: 0; border-bottom: 1px solid currentColor; padding: 0 0 9px; background: none; color: var(--text); }
 .campaign-pair { display: grid; grid-template-columns: 1.38fr 1fr; gap: 24px; position: relative; padding-bottom: 72px; }
 .campaign-image { display: block; position: relative; overflow: hidden; background: var(--surface-hover); }
-.campaign-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2,.7,.3,1); filter: saturate(.55); }
+.campaign-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2,.7,.3,1); filter: saturate(.8); }
 .campaign-image:hover img { transform: scale(1.025); }
 .campaign-primary { height: clamp(430px, 47vw, 740px); }
 .campaign-secondary { height: clamp(320px, 36vw, 565px); margin-top: 70px; }
@@ -102,15 +102,19 @@ button:disabled { cursor: wait; opacity: .55; }
 .editorial-app .category-nav__tab { border-radius: 0; padding: 10px 0; background: transparent; border: 0; color: var(--text-secondary); font-size: .875rem; }
 .editorial-app .category-nav__tab--active { color: var(--text); border-bottom: 1px solid var(--text); }
 .editorial-app .masonry-feed { padding: 0; gap: 26px; column-gap: 26px; }
-.fashion-pin { break-inside: avoid; margin-bottom: 32px; min-width: 0; }
+.fashion-pin { break-inside: avoid; margin-bottom: 28px; min-width: 0; border-radius: 14px; overflow: hidden; background: var(--surface-hover); box-shadow: 0 1px 4px #0000000d; transition: transform .35s cubic-bezier(.2,.7,.3,1), box-shadow .35s; }
+.fashion-pin:hover { transform: translateY(-4px); box-shadow: 0 6px 18px #00000012; }
 .editorial-app .pin { border-radius: 0; background: transparent; border: 0; box-shadow: none; margin: 0; }
 .editorial-app .pin:hover { box-shadow: none; transform: none; }
-.editorial-app .pin__image-wrap { border-radius: 0; aspect-ratio: 3/4; }
-.editorial-app .fashion-pin:nth-child(even) .pin__image-wrap { aspect-ratio: 4/5; }
-.editorial-app .pin__image { filter: saturate(.7); width: 100%; height: 100%; object-fit: cover; }
-.editorial-app .pin__caption { padding: 16px 0 4px; }
-.editorial-app .pin__title { font-weight: 400; font-size: .9375rem; }
-.editorial-app .pin__category { font-size: .75rem; }
+.editorial-app .pin__image-wrap { border-radius: 0; aspect-ratio: var(--pin-ratio, 3/4); transition: transform .4s cubic-bezier(.2,.7,.3,1); }
+.editorial-app .fashion-pin:nth-child(3n+2) .pin__image-wrap { aspect-ratio: var(--pin-ratio, 4/5); }
+.editorial-app .fashion-pin:nth-child(3n) .pin__image-wrap { aspect-ratio: var(--pin-ratio, 5/8); }
+.fashion-pin .pin__image { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.2,.7,.3,1); }
+.fashion-pin:hover .pin__image { transform: scale(1.04); }
+.editorial-app .pin__image { width: 100%; height: 100%; object-fit: cover; }
+.editorial-app .pin__caption { padding: 10px 0 4px; }
+.editorial-app .pin__title { font-weight: 400; font-size: .875rem; }
+.editorial-app .pin__category { font-size: .6875rem; }
 .editorial-app .pin__shop-indicator, .editorial-app .pin__tags-line { display: none; }
 .outfit-actions { display: flex; gap: 18px; padding-top: 10px; position: relative; flex-wrap: wrap; }
 .outfit-actions > button { border: 0; border-bottom: 1px solid var(--border-strong); background: none; color: var(--text); padding: 6px 0; font-size: .8125rem; }
@@ -179,8 +183,11 @@ button:disabled { cursor: wait; opacity: .55; }
 .editorial-app .shop-the-look__title { font-size: 42px; font-weight: 400; }
 .editorial-app .shop-the-look__grid { gap: 28px; }
 .editorial-app .outfit-hero__info-column .outfit-actions { margin: 20px 0; }
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .editorial-app .masonry-feed { columns: 4; display: block; }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .editorial-app .masonry-feed { columns: 3; display: block; }
 }
 @media (max-width: 1000px) {
   .editorial-nav { gap: 20px; }.editorial-links { margin-left: 0; gap: 16px; }

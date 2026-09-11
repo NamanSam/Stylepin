@@ -14,7 +14,7 @@ export default function FeedPage({ outfits, loading, error, usedDev, activeCateg
   if (loading) return <main className="collection-page"><p role="status">Preparing the edit…</p><FeedSkeleton /></main>
   if (error) return <main className="collection-page" role="alert"><h1>The edit is taking a moment.</h1><p>{error}</p></main>
   return <main>
-    {usedDev && <p className="preview-notice" role="status">Preview collection · Live outfits are currently unavailable. Saving is available on live looks.</p>}
+    {usedDev && <p className="preview-notice" role="status">Preview · Live outfits unavailable.</p>}
     {!searching && <EditorialHome outfits={outfits} onCategory={onCategoryChange} />}
     <section id="discover" className="editorial-section discover-section"><div className="section-heading"><div><span className="eyebrow">Your next point of view</span><h2>{searching ? 'Find your inspiration.' : 'Looks worth a closer look.'}</h2></div><span>{filtered.length} looks</span></div>
       <CategoryNav activeCategory={activeCategory} onCategoryChange={value => { setVisible(8); onCategoryChange(value) }} />
