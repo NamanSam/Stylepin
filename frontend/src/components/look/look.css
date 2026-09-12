@@ -119,3 +119,26 @@
   .look-page *, .look-page *::before, .look-page *::after { animation: none !important; transition: none !important; }
   .look-awaiting { opacity: 1; translate: none; }
 }
+
+/* The same neutral editorial materials used by Explore and collections. */
+.look-heading h2 { font-family: var(--fashion-serif, Georgia, serif); font-size: clamp(31px, 4vw, 58px); }
+.look-heading { padding: 42px 0 40px; }
+.look-model { background: var(--surface-hover); border-radius: 4px; }
+.look-model figcaption { border: 0; font-size: 8px; padding: 15px; }
+.look-piece { border-color: transparent; border-radius: 7px; box-shadow: 0 6px 28px var(--shadow); }
+.look-piece--floating .look-piece__image { padding: 22px; }
+.look-piece__content { padding: 7px 20px 20px; }
+.look-piece h3 { font-family: var(--fashion-serif, Georgia, serif); font-size: 17px; }
+.look-piece .look-kicker { font-size: 8px; }
+.look-section-heading h2 { font-family: var(--fashion-serif, Georgia, serif); }
+.look-section { margin-top: 75px; }
+.look-alternative h3 { font-family: var(--fashion-serif, Georgia, serif); }
+.look-orbit--left { padding-top: 36px; }
+.look-orbit--right { padding-top: 105px; }
+@media (min-width: 1100px) { .look-stage { grid-template-columns: minmax(180px, 1fr) minmax(360px, 2.2fr) minmax(180px, 1fr); column-gap: clamp(35px, 5vw, 85px); } }
+@media (max-width: 740px) {
+  .look-orbit--left, .look-orbit--right { padding-top: 0; }
+  .look-piece--floating .look-piece__image { padding: 12px; }
+  .look-piece h3 { font-size: 16px; }
+  .look-section { margin-top: 40px; }
+}

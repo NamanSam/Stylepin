@@ -1,47 +1,15 @@
 import { Link } from 'react-router-dom'
-import PinStandard from './PinStandard.jsx'
-import PinEditorial from './PinEditorial.jsx'
-import PinMinimal from './PinMinimal.jsx'
-import PinTrend from './PinTrend.jsx'
-import PinShoppable from './PinShoppable.jsx'
-import PinDetail from './PinDetail.jsx'
+import { useState } from 'react'
 import OutfitActions from './OutfitActions.jsx'
+import { outfitImageUrl } from '../../utils/exploreLayout.js'
 
-const PIN_COMPONENTS = {
-  standard: PinStandard,
-  editorial: PinEditorial,
-  minimal: PinMinimal,
-  trend: PinTrend,
-  shoppable: PinShoppable,
-  detail: PinDetail,
+export default function FashionPin({ outfit, index = 0, onRemove }) {
+  const live = outfit.id > 0 && !outfit.isDemo
+  const [failed, setFailed] = useState(null)
+  const src = outfitImageUrl(outfit.imageUrl, 700)
+  const content = <><div className="pin__image-wrap">{failed === src ? <span className="pin-image-empty">Image unavailable</span> : <img className="pin__image" src={src} alt={outfit.title} loading="lazy" decoding="async" onError={() => setFailed(src)} />}{live && <span className="pin__overlay"><span className="pin__open-look">View look ↗</span></span>}</div><div className="pin__caption"><span className="pin__category">{outfit.category}</span><h3 className="pin__title">{outfit.title}</h3></div></>
+  return <article className="fashion-pin" style={{ '--pin-ratio': outfit.ratio || ['2/3', '3/4', '4/5'][index % 3], '--stagger': Math.min(index, 5) }}>
+    {live ? <Link to={`/outfits/${outfit.id}`} className="pin-link" aria-label={`View outfit: ${outfit.title}`}>{content}</Link> : <div className="pin-preview">{content}</div>}
+    <OutfitActions outfit={outfit} onRemove={onRemove} />
+  </article>
 }
-
-const VARIANT_SEQUENCE = ['standard', 'editorial', 'minimal', 'editorial', 'standard', 'minimal']
-
-function assignVariant(outfit, index) {
-  if (outfit.variant && PIN_COMPONENTS[outfit.variant]) return outfit.variant
-  const tags = outfit.tags || []
-  if (tags.some(t => t.toLowerCase().includes('trending'))) return 'trend'
-  return VARIANT_SEQUENCE[index % VARIANT_SEQUENCE.length]
-}
-
-function FashionPin({ outfit, index, onRemove }) {
-  const variant = assignVariant(outfit, index)
-  const PinComponent = PIN_COMPONENTS[variant] || PinStandard
-
-  return (
-    <div
-      className="fashion-pin"
-      style={outfit.ratio ? { '--pin-ratio': outfit.ratio } : undefined}
-    ><Link
-      to={`/outfits/${outfit.id}`}
-      className="pin-link"
-      aria-label={`View outfit: ${outfit.title}`}
-      style={{ '--stagger': index }}
-    >
-      <PinComponent outfit={outfit} />
-    </Link><OutfitActions outfit={outfit} onRemove={onRemove} /></div>
-  )
-}
-
-export default FashionPin

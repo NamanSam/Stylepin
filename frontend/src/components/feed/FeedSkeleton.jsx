@@ -1,6 +1,6 @@
 import FeedSkeletonCard from '../ui/FeedSkeletonCard.jsx'
 
-const SKELETON_HEIGHTS = [110, 130, 95, 120, 105, 140, 100, 125, 115, 135, 90, 128]
+const SKELETON_HEIGHTS = [150, 133, 125, 150, 133, 150, 125, 133]
 
 function FeedSkeleton() {
   return (

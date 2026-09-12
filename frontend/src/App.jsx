@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import DiscoveryHeader from './components/layout/DiscoveryHeader.jsx'
 import FeedPage from './pages/FeedPage.jsx'
+import ExplorePage from './pages/ExplorePage.jsx'
 import OutfitDetailPage from './pages/OutfitDetailPage.jsx'
 import AuthPage from './pages/AuthPage.jsx'
 import SavedPage from './pages/SavedPage.jsx'
@@ -22,10 +23,16 @@ function Site() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [usedDev, setUsedDev] = useState(false)
+  const [revision, setRevision] = useState(0)
+  const [retrying, setRetrying] = useState(false)
+  function retryOutfits() { setRetrying(true); setRevision(value => value + 1) }
   const location = useLocation()
   useEffect(() => {
     if (!location.hash) window.scrollTo(0,0)
-    else requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView())
+    else {
+      const frame = requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView())
+      return () => cancelAnimationFrame(frame)
+    }
   }, [location.pathname, location.hash, loading])
   useEffect(() => {
     let ignore = false
@@ -33,21 +40,22 @@ function Site() {
       try {
         const data = await fetchOutfits()
         if (!data?.length) throw new Error('No live outfits')
-        if (!ignore) setOutfits(data)
+        if (!ignore) { setOutfits(data); setUsedDev(false); setError(null) }
       } catch {
         try {
-          const mod = await import('./dev/demoFashionFeed.js')
-          if (!ignore) { setOutfits(mod.default.map(o => ({ ...o, isDemo: true }))); setUsedDev(true) }
+          const mod = await import('./data/editorialPreview.js')
+          if (!ignore) { setOutfits(mod.default); setUsedDev(true); setError(null) }
         } catch { if (!ignore) setError('Unable to load outfits. Please try again later.') }
-      } finally { if (!ignore) setLoading(false) }
+      } finally { if (!ignore) { setLoading(false); setRetrying(false) } }
     }
     load()
     return () => { ignore = true }
-  }, [])
+  }, [revision])
   return <div className="editorial-app"><a href="#page-content" className="skip-link">Skip to content</a>
     <DiscoveryHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} theme={theme} onToggleTheme={toggleTheme} />
-    <div id="page-content"><Routes>
-      <Route path="/" element={<FeedPage outfits={outfits} loading={loading} error={error} usedDev={usedDev} activeCategory={activeCategory} onCategoryChange={setActiveCategory} searchQuery={searchQuery} />} />
+    <div id="page-content" tabIndex={-1}><Routes>
+      <Route path="/" element={<FeedPage outfits={outfits} loading={loading} error={error} usedDev={usedDev} activeCategory={activeCategory} onCategoryChange={setActiveCategory} searchQuery={searchQuery} onRetry={retryOutfits} retrying={retrying} />} />
+      <Route path="/explore" element={<ExplorePage outfits={outfits} loading={loading} error={error} usedDev={usedDev} onRetry={retryOutfits} retrying={retrying} />} />
       <Route path="/outfits/:id" element={<OutfitDetailPage />} />
       <Route path="/login" element={<AuthPage key="login" />} />
       <Route path="/register" element={<AuthPage key="register" registration />} />

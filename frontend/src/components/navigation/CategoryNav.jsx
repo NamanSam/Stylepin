@@ -27,6 +27,7 @@ function CategoryNav({ activeCategory, onCategoryChange }) {
             type="button"
             className={`category-nav__tab ${activeCategory === category ? 'category-nav__tab--active' : ''}`}
             onClick={() => onCategoryChange(category)}
+            aria-pressed={activeCategory === category}
           >
             {category}
           </button>
