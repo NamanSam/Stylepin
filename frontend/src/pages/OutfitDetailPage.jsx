@@ -1,161 +1,38 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { fetchOutfitById } from '../api/outfitApi.js'
-import ProductCard from '../components/ProductCard.jsx'
-import OutfitActions from '../components/pins/OutfitActions.jsx'
+import { fetchOutfitById, fetchOutfits } from '../api/outfitApi.js'
+import LookBreakdown from '../components/look/LookBreakdown.jsx'
+import '../components/look/look.css'
 
-function OutfitDetailPage() {
+export default function OutfitDetailPage() {
   const { id } = useParams()
-  const [outfit, setOutfit] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
+  const [result, setResult] = useState(null)
+  const [catalog, setCatalog] = useState({ outfits: [], loading: true, error: false })
   useEffect(() => {
     let ignore = false
-
-    async function loadOutfit() {
-      try {
-        setLoading(true)
-        setError(null)
-        const data = await fetchOutfitById(id)
-        if (!ignore) {
-          setOutfit(data)
-        }
-      } catch (err) {
-        if (!ignore) {
-          setError(err)
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false)
-        }
-      }
-    }
-
-    loadOutfit()
-
-    return () => {
-      ignore = true
-    }
+    fetchOutfits().then(outfits => {
+      if (!ignore) setCatalog({ outfits: Array.isArray(outfits) ? outfits : [], loading: false, error: false })
+    }).catch(() => { if (!ignore) setCatalog({ outfits: [], loading: false, error: true }) })
+    return () => { ignore = true }
+  }, [])
+  useEffect(() => {
+    let ignore = false
+    fetchOutfitById(id).then(outfit => {
+      if (!ignore) setResult({ id, outfit })
+    }).catch(error => { if (!ignore) setResult({ id, error }) })
+    return () => { ignore = true }
   }, [id])
-
-  return (
-    <div className="page outfit-detail-page">
-      <nav className="detail-nav" aria-label="Breadcrumb">
-        <div className="detail-nav__inner">
-          <Link to="/" className="detail-nav__back">
-            <span aria-hidden="true">&larr;</span> Back to Feed
-          </Link>
-          <Link to="/" className="detail-nav__logo">
-            StylePin
-          </Link>
-        </div>
-      </nav>
-
-      <main className="detail-container">
-        {loading && (
-          <div className="detail-status" role="status">
-            <div className="detail-status__spinner" aria-hidden="true" />
-            <p>Loading outfit details...</p>
-          </div>
-        )}
-
-        {!loading && error && error.status === 404 && (
-          <div className="detail-status detail-status--not-found" role="alert">
-            <p className="detail-status__badge">404</p>
-            <h2 className="detail-status__title">Outfit Not Found</h2>
-            <p className="detail-status__desc">
-              The look you are searching for does not exist or may have been removed.
-            </p>
-            <Link to="/" className="detail-status__button">
-              Return to Fashion Feed
-            </Link>
-          </div>
-        )}
-
-        {!loading && error && error.status !== 404 && (
-          <div className="detail-status detail-status--error" role="alert">
-            <h2 className="detail-status__title">Unable to Load Outfit</h2>
-            <p className="detail-status__desc">{error.message || 'An unexpected error occurred.'}</p>
-            <p className="detail-status__subtext">
-              Please check that the backend is running at http://localhost:8080.
-            </p>
-            <Link to="/" className="detail-status__button">
-              Return to Fashion Feed
-            </Link>
-          </div>
-        )}
-
-        {!loading && !error && outfit && (
-          <>
-            <section className="outfit-hero">
-              <div className="outfit-hero__image-column">
-                <img
-                  className="outfit-hero__image"
-                  src={outfit.imageUrl}
-                  alt={outfit.title}
-                />
-              </div>
-
-              <div className="outfit-hero__info-column">
-                {outfit.category && (
-                  <p className="outfit-hero__category">{outfit.category}</p>
-                )}
-                <h1 className="outfit-hero__title">{outfit.title}</h1>
-                <OutfitActions outfit={outfit} />
-                {outfit.description && (
-                  <p className="outfit-hero__description">{outfit.description}</p>
-                )}
-
-                {outfit.tags && outfit.tags.length > 0 && (
-                  <div className="outfit-hero__tags" aria-label="Tags">
-                    {outfit.tags.map((tag, i) => (
-                      <span
-                        key={tag}
-                        className="outfit-hero__tag"
-                        style={{ '--tag-index': i }}
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </section>
-
-            <section className="shop-the-look" aria-labelledby="shop-the-look-heading">
-              <div className="shop-the-look__header">
-                <h2 id="shop-the-look-heading" className="shop-the-look__title">
-                  Shop the Look
-                </h2>
-                <p className="shop-the-look__subtitle">
-                  Curated pieces featured in this outfit
-                </p>
-              </div>
-
-              {outfit.products && outfit.products.length > 0 ? (
-                <div className="shop-the-look__grid">
-                  {outfit.products.map((product, index) => (
-                    <div
-                      key={product.id}
-                      className="shop-the-look__item"
-                      style={{ '--item-index': index }}
-                    >
-                      <ProductCard product={product} />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="shop-the-look__empty">
-                  <p>No products currently available for this look.</p>
-                </div>
-              )}
-            </section>
-          </>
-        )}
-      </main>
-    </div>
-  )
+  const loading = result?.id !== id
+  const error = !loading && result?.error
+  return <main className="look-page" aria-busy={loading}>
+    <nav className="look-nav" aria-label="Breadcrumb"><Link to="/">← Back to discovery</Link><span>The StylePin edit / Look breakdown</span></nav>
+    {loading && <p className="look-loading" role="status">Loading your look…</p>}
+    {error ? <div className="look-status" role="alert">
+      <p className="look-kicker">{error.status === 404 ? 'Look not found / 404' : 'Something went wrong'}</p>
+      <h1>{error.status === 404 ? 'This look is no longer here.' : 'Unable to load this look.'}</h1>
+      <p>Please return to discovery and try another look.</p><Link to="/">Back to discovery ↗</Link>
+    </div> : result?.outfit ? <div className={loading ? 'look-pending' : undefined} inert={loading || undefined}>
+      <LookBreakdown key={result.id} outfit={result.outfit} catalog={catalog} />
+    </div> : <div className="look-skeleton" aria-hidden="true"><div /><div /><div /></div>}
+  </main>
 }
-
-export default OutfitDetailPage

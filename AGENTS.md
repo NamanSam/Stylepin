@@ -68,3 +68,7 @@ These are planned capabilities, not completed end-to-end functionality:
 - **Respect shared work.** Inspect Git status before editing, preserve changes made by the user or other tools, and stay within the requested scope.
 - **Run builds/tests after changes.** Backend: `.\mvnw.cmd package` (runs tests). Frontend: `npm run build` and `npm run lint`.
 - Keep this file and `README.md` aligned with implementation changes.
+
+## Look Breakdown experience
+
+The /outfits/:id page uses components in frontend/src/components/look for a centered, uncropped outfit hero and garment-aware product modules. Desktop and tablet use side columns; mobile stacks the image, metadata, and pieces. Shop the Look repeats all API products with INR prices. Related outfits use real API data ranked by category, shared tags, then aesthetic terms; the current outfit is excluded. Matching alternative pieces appear only with non-placeholder HTTP(S) store URLs. Seed example.com links are shown as unavailable. Light/dark themes, Save and Board actions, reduced motion, loading, and error states are preserved. No API contracts or discovery feed layout changed.

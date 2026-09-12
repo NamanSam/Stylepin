@@ -112,3 +112,7 @@ These capabilities are planned, not completed end-to-end features:
 ## Working on StylePin
 
 Read `AGENTS.md` before making changes. This repository is shared with tools including Codex, Cursor, OpenCode, and Antigravity. Preserve existing work, keep changes scoped to the request, and explicitly call out API contract changes. Roadmap items should be implemented only when requested.
+
+## Look Breakdown experience
+
+The /outfits/:id page uses components in frontend/src/components/look for a centered, uncropped outfit hero and garment-aware product modules. Desktop and tablet use side columns; mobile stacks the image, metadata, and pieces. Shop the Look repeats all API products with INR prices. Related outfits use real API data ranked by category, shared tags, then aesthetic terms; the current outfit is excluded. Matching alternative pieces appear only with non-placeholder HTTP(S) store URLs. Seed example.com links are shown as unavailable. Light/dark themes, Save and Board actions, reduced motion, loading, and error states are preserved. No API contracts or discovery feed layout changed.
