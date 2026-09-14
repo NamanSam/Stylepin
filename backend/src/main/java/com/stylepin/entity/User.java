@@ -7,6 +7,11 @@ import java.time.Instant;
 @Entity
 @Table(name = "users")
 public class User {
+    public enum Role { USER, ADMIN }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'USER'")
+    private Role role = Role.USER;
+    public Role getRole() { return role; }
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true, length = 30)

@@ -48,6 +48,7 @@ public class SecurityConfig {
         return decoder;
     }
     @Bean SecurityFilterChain security(HttpSecurity http, SecurityErrorHandler errors,
+            com.stylepin.service.AdminAuthorizationService admins,
             @Value("${stylepin.auth.cookie-secure}") boolean secure,
             @Value("${stylepin.auth.allowed-origins}") String origins) throws Exception {
         CookieCsrfTokenRepository csrf = new CookieCsrfTokenRepository();
@@ -57,7 +58,7 @@ public class SecurityConfig {
             .cors(c -> c.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
                 config.setAllowedOrigins(Arrays.stream(origins.split(",")).map(String::trim).toList());
-                config.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
+                config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("Content-Type", "Authorization", "X-XSRF-TOKEN"));
                 config.setAllowCredentials(true);
                 return config;
@@ -68,6 +69,8 @@ public class SecurityConfig {
                 !List.of("GET", "HEAD", "OPTIONS").contains(request.getMethod())))
             .authorizeHttpRequests(a -> a
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/admin/**").access((authentication, context) ->
+                    new org.springframework.security.authorization.AuthorizationDecision(admins.isAdmin(authentication.get())))
                 .requestMatchers(HttpMethod.GET, "/api/outfits", "/api/outfits/*", "/api/auth/csrf").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/refresh", "/api/auth/logout").permitAll()
                 .anyRequest().authenticated())

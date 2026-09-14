@@ -31,7 +31,7 @@ StylePin is a large, long-term Pinterest-inspired fashion discovery platform wit
 - JPA/Hibernate and MySQL auto-configuration are enabled. Entities are `Category`, `Outfit`, and `Product`. Outfits belong to categories and contain products; products also have an optional category reference.
 - MySQL is configured at `jdbc:mysql://localhost:3306/stylepin`, with username `root` and password supplied through the backend process's `DB_PASSWORD` environment variable.
 - Hibernate schema handling is `spring.jpa.hibernate.ddl-auto=update`.
-- `DataInitializer` seeds development categories, outfits, and products on startup when `stylepin.seed-data.enabled=true` (currently enabled). It also synchronizes seeded products on existing outfits. Seed images use Unsplash; product links are placeholders.
+- `DataInitializer` seeds development categories, outfits, and products on startup when `stylepin.seed-data.enabled=true` (currently enabled). It leaves products on existing outfits untouched; only newly seeded outfits receive seed products. Seed images use Unsplash; product links are placeholders.
 - Spring integration tests use the `test` profile with an in-memory H2 database and `create-drop` schema handling. Tests cover application startup, outfit endpoints, and entity relationships.
 
 ## Commands and validation
@@ -82,3 +82,12 @@ The /outfits/:id page uses components in frontend/src/components/look for a cent
 - Explore polish preserves keyboard-focus pauses independently of pointer exit, waits for visibility before starting, and guards queued callbacks after unmount. Reduced motion also suppresses hover scaling and clears pending reveals when the preference changes. Collection controls use 44px targets and wrap long content. See `docs/explore-verification.md` for verification scope and remaining environment-dependent checks.
 - The campaign now uses staggered positions and per-slot scale, slower drift, hover lift and neighbor recession. `data/editorialPreview.js` replaces the legacy stock fallback at the App import boundary with six curated previews, including three local AI campaign studies in `public/images/editorial`. Keep their negative IDs and AI disclosure; never substitute generated imagery onto a real outfit. Curation excludes recognized corporate stock only from campaign placement. See `docs/editorial-image-direction.md` for asset provenance and prompts.
 - Keep Explore and Discover distinct: `/explore` contains the spatial field and an editorial link to `/#discover`, not a second masonry gallery. Discover renders the complete filtered API array with lazy images, no eight-look display cap. Its six-record offline fallback is explicitly a featured preview with a retry action. Campaign curation must never truncate the shared catalog. Run `node scripts/check-experiences.mjs` from `frontend/` for the render-level catalog/navigation regression check.
+
+## Product management milestone
+
+- `/admin/products` provides protected product CRUD with INR/image previews, validation, recent products, editing, and delete confirmation. It reuses the existing Product entity and MySQL database.
+- All `/api/admin/**` routes require a database ADMIN role after existing JWT authentication. Users default to USER; registration never grants ADMIN. User response DTOs add `role`; outfit response contracts remain unchanged.
+- Product outfit references are now nullable. Retailer, tags, and availability are persisted. Attached products cannot be deleted through admin CRUD. Outfit attachment UI and public availability display are deferred.
+- Run `backend/scripts/product-management-mysql.sql` before starting against an existing MySQL database. The upgrade is idempotent and preserves rows. See `docs/product-management.md` for exact one-account admin promotion and verification steps.
+- DataInitializer only adds products for newly seeded outfits. It no longer synchronizes or removes products on existing outfits, preserving manual/admin changes across restarts.
+- The Maven Wrapper includes a Windows null-target guard for ordinary `.m2` directories.

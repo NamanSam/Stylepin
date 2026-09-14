@@ -15,6 +15,7 @@ export default function AccountMenu() {
     {user ? <>
       <span className="account-avatar" title={user.username} aria-label={'Signed in as ' + user.username}>{user.username.slice(0,1).toUpperCase()}</span>
       <Link to="/saved">Saved</Link><Link to="/boards">Boards</Link>
+      {user.role === 'ADMIN' && <Link to="/admin/products">Products</Link>}
       <button onClick={leave} disabled={busy}>{busy ? 'Leaving…' : 'Logout'}</button>
     </> : <><Link to="/login">Login</Link><Link to="/register" className="register-link">Register</Link></>}
     {error && <p className="account-error" role="alert">{error}</p>}

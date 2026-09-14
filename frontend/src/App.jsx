@@ -10,6 +10,8 @@ import BoardsPage from './pages/BoardsPage.jsx'
 import BoardDetailPage from './pages/BoardDetailPage.jsx'
 import AuthProvider from './auth/AuthProvider.jsx'
 import ProtectedRoute from './auth/ProtectedRoute.jsx'
+import AdminRoute from './auth/AdminRoute.jsx'
+import AdminProductsPage from './pages/AdminProductsPage.jsx'
 import SavedOutfitsProvider from './context/SavedOutfitsProvider.jsx'
 import { fetchOutfits } from './api/outfitApi.js'
 import useTheme from './hooks/useTheme.js'
@@ -59,6 +61,9 @@ function Site() {
       <Route path="/outfits/:id" element={<OutfitDetailPage />} />
       <Route path="/login" element={<AuthPage key="login" />} />
       <Route path="/register" element={<AuthPage key="register" registration />} />
+      <Route element={<AdminRoute />}>
+        <Route path="/admin/products" element={<AdminProductsPage />} />
+      </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="/saved" element={<SavedPage />} />
         <Route path="/boards" element={<BoardsPage />} />

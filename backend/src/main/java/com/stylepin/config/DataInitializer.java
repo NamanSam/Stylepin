@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+
+
+
 
 @Component
 @ConditionalOnProperty(name = "stylepin.seed-data.enabled", havingValue = "true", matchIfMissing = true)
@@ -477,40 +477,17 @@ public class DataInitializer implements CommandLineRunner {
 
     private void seedOutfit(List<Outfit> outfits, Category category, String title, String description, String imageUrl,
                             List<String> tags, List<ProductSeed> productSeeds) {
-        Outfit outfit = outfitRepository.findByTitle(title)
-                .orElseGet(() -> {
-                    Outfit created = new Outfit(category, title, description, imageUrl);
-                    tags.forEach(created::addTag);
-                    outfits.add(created);
-                    return created;
-                });
-        if (!imageUrl.equals(outfit.getImageUrl())) {
-            outfit.setImageUrl(imageUrl);
-        }
-        syncProducts(outfit, category, productSeeds);
-    }
-
-    private void syncProducts(Outfit outfit, Category category, List<ProductSeed> productSeeds) {
-        Set<String> seedNames = productSeeds.stream().map(ProductSeed::name).collect(Collectors.toSet());
-        outfit.getProducts().removeIf(existing -> !seedNames.contains(existing.getName()));
-        Map<String, Product> productsByName = outfit.getProducts().stream()
-                .collect(Collectors.toMap(Product::getName, product -> product));
+        if (outfitRepository.findByTitle(title).isPresent()) return;
+        Outfit outfit = new Outfit(category, title, description, imageUrl);
+        tags.forEach(outfit::addTag);
         for (ProductSeed seed : productSeeds) {
-            Product existing = productsByName.get(seed.name());
-            if (existing == null) {
-                Product product = new Product(outfit, seed.name(), seed.brand(), new BigDecimal(seed.priceInr()));
-                product.setImageUrl(IMAGE_BASE + seed.imageId() + "?auto=format&fit=crop&w=600&q=80");
-                product.setProductUrl("https://example.com/products/" + seed.slug());
-                product.setCategory(category);
-                outfit.addProduct(product);
-            } else {
-                existing.setBrand(seed.brand());
-                existing.setPrice(new BigDecimal(seed.priceInr()));
-                existing.setImageUrl(IMAGE_BASE + seed.imageId() + "?auto=format&fit=crop&w=600&q=80");
-                existing.setProductUrl("https://example.com/products/" + seed.slug());
-                existing.setCategory(category);
-            }
+            Product product = new Product(outfit, seed.name(), seed.brand(), new BigDecimal(seed.priceInr()));
+            product.setImageUrl(IMAGE_BASE + seed.imageId() + "?auto=format&fit=crop&w=600&q=80");
+            product.setProductUrl("https://example.com/products/" + seed.slug());
+            product.setCategory(category);
+            outfit.addProduct(product);
         }
+        outfits.add(outfit);
     }
 
     private String img(String photoId) {

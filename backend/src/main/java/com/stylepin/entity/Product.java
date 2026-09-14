@@ -10,7 +10,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
+import java.util.Set;
+import java.util.LinkedHashSet;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -27,9 +30,8 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Outfit is required")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "outfit_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "outfit_id")
     private Outfit outfit;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -55,6 +57,24 @@ public class Product {
     @Size(max = 2048, message = "Product URL must not exceed 2048 characters")
     @Column(name = "product_url", length = 2048)
     private String productUrl;
+
+    @Column(length = 100)
+    private String retailer;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean available = true;
+
+    @ElementCollection
+    @CollectionTable(name = "product_tags", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "tag", length = 50, nullable = false)
+    private Set<String> tags = new LinkedHashSet<>();
+
+    public String getRetailer() { return retailer; }
+    public void setRetailer(String retailer) { this.retailer = retailer; }
+    public boolean isAvailable() { return available; }
+    public void setAvailable(boolean available) { this.available = available; }
+    public Set<String> getTags() { return tags; }
+    public void setTags(Set<String> tags) { this.tags = tags; }
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
